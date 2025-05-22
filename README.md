@@ -10,6 +10,8 @@ The goal of this project is to generate realistic gesture sequences conditioned 
 - **Discriminator**: Evaluates the realism of generated sequences and distinguishes between real and synthetic motion.
 
 ## Repository Structure
+
+```bash
 .
 ├── Data/                               # Training, validation, and test datasets (.npy, .mat, .npz)
 ├── Hyperparameter_Tuning_and_Ablation_Study/  # Configurations and results for ablation and tuning experiments
