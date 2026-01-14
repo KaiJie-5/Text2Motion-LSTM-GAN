@@ -12,7 +12,7 @@
 #SBATCH --mail-type=ALL
 
 # send mail to this address
-#SBATCH --mail-user=kjl1a21@soton.ac.uk
+# #SBATCH --mail-user=your-email@example.com
 
 # Load necessary modules
 module load cuda/12.2 

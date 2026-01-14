@@ -1,18 +1,24 @@
-from structure_GAN import create_Generator, create_discriminator, train_d, train_g
 import numpy as np
 import tensorflow as tf
 import matplotlib.pyplot as plt
 import os
+import sys
 import scipy.io as scio
+from pathlib import Path
+from structure_GAN import create_Generator, create_discriminator, train_d, train_g
+
+# Add parent directory to path to import config
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+import config
 
 print("Num GPUs Available: ", len(tf.config.list_physical_devices('GPU')))
 
 # Load your data
-train_script = np.load('../Data/train_script.npy')  #(25535, 512)
-train_action = np.load('../Data/train_action.npy')  #(25535, 32, 24)
-val_action = np.load('../Data/val_action.npy') #(1595, 32, 24)
-val_script = np.load('../Data/val_script.npy') #(1595, 512)
-init_pose = scio.loadmat('../Data/mean_pose.mat')['mean_vector']
+train_script = np.load(config.DATA_DIR / 'train_script.npy')
+train_action = np.load(config.DATA_DIR / 'train_action.npy')
+val_action = np.load(config.DATA_DIR / 'val_action.npy')
+val_script = np.load(config.DATA_DIR / 'val_script.npy')
+init_pose = scio.loadmat(config.DATA_DIR / 'mean_pose.mat')['mean_vector']
 init_pose = np.transpose(init_pose,(1,0))
 
 print(f'Train Action Min :{train_action.min()}')
@@ -30,19 +36,17 @@ print(val_action.shape)
 print(val_script.shape)
 print(init_pose.shape)
 
-# Global variables
-latent_dim = 20
-text_dim = 512
-action_time_steps = 32
-dim_action = 24
-epochs = 150
-batch_size = 32 
-alpha = 1
-beta = 10
-gamma = 5
+# Hyperparameters from config
+latent_dim = config.LATENT_DIM
+text_dim = config.TEXT_DIM
+action_time_steps = config.ACTION_TIME_STEPS
+dim_action = config.DIM_ACTION
+epochs = config.EPOCHS
+batch_size = config.BATCH_SIZE
+alpha = config.ALPHA
+beta = config.BETA
+gamma = config.GAMMA
 case_number = 5
-
-import tensorflow as tf
 
 # Create a TensorFlow Dataset from training data
 dataset = tf.data.Dataset.from_tensor_slices((train_script, train_action))
@@ -78,8 +82,8 @@ print(generator.summary())
 print(discriminator.summary())
 
 # Define optimizers
-generator_optimizer = tf.keras.optimizers.Adam(learning_rate= 0.00002)
-discriminator_optimizer = tf.keras.optimizers.Adam(learning_rate=0.00002)
+generator_optimizer = tf.keras.optimizers.Adam(learning_rate=config.LEARNING_RATE_G)
+discriminator_optimizer = tf.keras.optimizers.Adam(learning_rate=config.LEARNING_RATE_D)
 
 # Define loss function  
 cross_entropy = tf.keras.losses.BinaryCrossentropy()
@@ -139,8 +143,8 @@ for epoch in range(epochs + 1):
         all_val_generated.append(generated_output.numpy())
         all_val_real.append(val_action_batch.numpy())
 
-    # Save the model every 50 epochs
-    if epoch % 50 == 0:
+    # Save the model periodically
+    if epoch % config.CHECKPOINT_FREQUENCY == 0:
         generator.save(f"../Hyperparameter_Tuning_and_Ablation_Study/Model_and_Results/Case_{case_number}/model_epoch_{epoch}.keras")
 
         # Save to files
