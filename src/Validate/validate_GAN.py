@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from calk_jerk_or_acceleration import compute_jerks, compute_acceleration, compute_velocity
+from calc_jerk_or_acceleration import compute_jerks, compute_acceleration, compute_velocity
 from calc_errors import APE
 
 MAE = tf.keras.losses.MeanAbsoluteError()
