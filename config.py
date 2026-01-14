@@ -7,6 +7,9 @@ MODELS_DIR = ROOT_DIR / 'Models'
 RESULTS_DIR = ROOT_DIR / 'Results'
 SRC_DIR = ROOT_DIR / 'src'
 
+# Universal Sentence Encoder model path
+ENCODER_MODEL_PATH = ROOT_DIR / 'universal_sentence_encoder'
+
 # Model hyperparameters
 LATENT_DIM = 20
 TEXT_DIM = 512
@@ -14,6 +17,7 @@ ACTION_TIME_STEPS = 32
 DIM_ACTION = 24
 EPOCHS = 150
 BATCH_SIZE = 32
+DEFAULT_CASE_NUMBER = 5
 
 # Loss weights
 ALPHA = 1   # Adversarial loss weight
