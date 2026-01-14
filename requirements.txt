@@ -1,0 +1,13 @@
+numpy==1.26.4
+scipy==1.13.1
+scikit-learn==1.6.1
+matplotlib>=3.0.0
+tensorflow==2.16.1
+tensorflow-hub>=0.12.0
+keras==3.6.0
+torch==2.5.1
+torchvision==0.20.1
+torchaudio==2.5.1
+jupyter>=1.0.0
+ipython>=8.0.0
+ipykernel>=6.0.0

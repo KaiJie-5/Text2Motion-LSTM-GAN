@@ -3,7 +3,7 @@ from tensorflow.keras import Input, Model
 from tensorflow.keras.layers import (Layer,LSTM, Dense, RepeatVector,Dropout,
                                       Concatenate,Reshape, LayerNormalization, ReLU,
                                       GlobalAveragePooling1D, Conv1D,SpectralNormalization)
-from calk_jerk_or_acceleration import tf_compute_velocity
+from calc_jerk_or_acceleration import tf_compute_velocity
 
 class StackLayer(Layer):
     def call(self, inputs):
@@ -18,8 +18,19 @@ class InitialStateLayer(Layer):
         batch_size = tf.shape(inputs)[0]  
         return tf.zeros((batch_size, self.units))
 
-# Define the generator model
 def create_Generator(latent_dim, text_dim, action_time_step, init_pose):
+    """
+    Create LSTM-based Generator for gesture synthesis.
+
+    Args:
+        latent_dim: Dimension of random noise vector
+        text_dim: Dimension of text embeddings (512 for Universal Sentence Encoder)
+        action_time_step: Number of frames to generate (32)
+        init_pose: Initial pose to condition generation
+
+    Returns:
+        Keras Model for the Generator
+    """
     input_noise = Input(shape=(latent_dim,), name='noise')
     input_text = Input(shape=(text_dim,), name='text')
     init_pose = Input(shape=(1,24), name='pose')
@@ -44,7 +55,16 @@ def create_Generator(latent_dim, text_dim, action_time_step, init_pose):
     return model
 
 def create_discriminator(generated_input_shape, text_dim):
-    # Motion Input (Time, Motion_Dim)
+    """
+    Create CNN-based Discriminator for motion classification.
+
+    Args:
+        generated_input_shape: Shape of motion input (time_steps, motion_dim)
+        text_dim: Dimension of text embeddings (512)
+
+    Returns:
+        Keras Model for the Discriminator
+    """
     motion_input = Input(shape=generated_input_shape, name='generated_action')
     
     # Text Input
@@ -80,8 +100,23 @@ def create_discriminator(generated_input_shape, text_dim):
 
     return model
 
-# Train Discriminator
 def train_d(generator, discriminator, noise, text_embeddings_batch, real_action_batch, cross_entropy, discriminator_optimizer,batched_input):
+    """
+    Train the Discriminator for one step.
+
+    Args:
+        generator: Generator model
+        discriminator: Discriminator model
+        noise: Random noise input
+        text_embeddings_batch: Batch of text embeddings
+        real_action_batch: Batch of real motion sequences
+        cross_entropy: Loss function
+        discriminator_optimizer: Optimizer for discriminator
+        batched_input: Initial pose batch
+
+    Returns:
+        Tuple of (discriminator_loss, real_loss, fake_loss)
+    """
     with tf.GradientTape() as disc_tape:
         # Generate fake actions
         fake_action_batch = generator([noise, text_embeddings_batch, batched_input], training=False)
@@ -110,6 +145,26 @@ def train_d(generator, discriminator, noise, text_embeddings_batch, real_action_
     return d_loss.numpy(), real_loss.numpy(), fake_loss.numpy()
 
 def train_g(generator, discriminator, noise, text_embeddings_batch, real_action_batch, cross_entropy, mean_squared_error, generator_optimizer, alpha, beta, gamma, batched_input):
+    """
+    Train the Generator for one step.
+
+    Args:
+        generator: Generator model
+        discriminator: Discriminator model
+        noise: Random noise input
+        text_embeddings_batch: Batch of text embeddings
+        real_action_batch: Batch of real motion sequences
+        cross_entropy: Binary cross entropy loss function
+        mean_squared_error: MSE loss function
+        generator_optimizer: Optimizer for generator
+        alpha: Weight for adversarial loss
+        beta: Weight for distance loss
+        gamma: Weight for velocity loss
+        batched_input: Initial pose batch
+
+    Returns:
+        Tuple of (adversarial_loss, distance_loss, velocity_loss)
+    """
     with tf.GradientTape() as gen_tape:
         # Generate fake actions
         fake_action_batch = generator([noise, text_embeddings_batch, batched_input], training=True)
