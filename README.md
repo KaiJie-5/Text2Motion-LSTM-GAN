@@ -400,66 +400,6 @@ Training progress is logged with detailed information:
 2026-01-14 12:35:05 - __main__ - INFO - Epoch 0/150 - Real loss: 0.6932, ...
 ```
 
-## Troubleshooting
-
-### Common Issues
-
-**1. Import errors**
-```bash
-# Make sure you install the package
-pip install -e .
-
-# Or add to PYTHONPATH
-export PYTHONPATH="${PYTHONPATH}:/path/to/Text2Motion-LSTM-GAN"
-```
-
-**2. CUDA out of memory**
-```python
-# Reduce batch size in config.py
-BATCH_SIZE = 16  # Instead of 32
-```
-
-**3. Data files not found**
-```bash
-# Ensure you are in the correct directory
-cd src/Train
-python execute_model.py
-
-# Or use absolute paths in config.py
-```
-
-**4. Model loading errors**
-```python
-# Use compatible TensorFlow version
-pip install tensorflow==2.16.1
-```
-
-## Performance
-
-Training performance on different hardware:
-
-- **GPU (NVIDIA RTX 3090)**: ~2 hours for 150 epochs
-- **GPU (NVIDIA V100)**: ~3 hours for 150 epochs
-- **CPU (Intel i9)**: ~24 hours for 150 epochs
-
-## Citation
-
-If you use this code in your research, please cite:
-
-```bibtex
-@misc{text2motion-lstm-gan,
-  author = {Your Name},
-  title = {Robot Gesture Generation using LSTM-GAN},
-  year = {2024},
-  publisher = {GitHub},
-  url = {https://github.com/yourusername/Text2Motion-LSTM-GAN}
-}
-```
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
 ## Acknowledgments
 
 - University of Southampton for research support
@@ -471,13 +411,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 For questions or issues:
 - Open an issue on GitHub
-- Email: your.email@example.com
-
-## Future Work
-
-Potential improvements and extensions:
-- Support for more robot platforms
-- Real-time gesture generation
-- Multi-modal input (audio + text)
-- Larger motion vocabulary
-- Transfer learning from pre-trained models
+- Email: liangkj75@gmail.com
